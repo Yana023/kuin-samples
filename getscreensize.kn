@@ -1,0 +1,17 @@
+var wndMain: wnd@Wnd
+var wndScreenSizeText: wnd@Edit
+var wndScreenSizeLabel: wnd@Label
+
+func main()
+	do @wndMain :: wnd@makeWnd(null, %normal, 300, 200, "GetScreenSize")
+	do @wndScreenSizeLabel :: wnd@makeLabel(@wndMain, 12, 16, 80, 22, %fix, %fix, "ScreenSize:")
+	do @wndScreenSizeText :: wnd@makeEdit(@wndMain, 80, 12, 80, 22, %scale, %fix)
+	
+	var x: int
+	var y: int
+	do wnd@screenSize(&x, &y)
+	do @wndScreenSizeText.setText(x.toStr() ~ ", " ~ y.toStr())
+	
+	while(wnd@act())
+	end while
+end func
