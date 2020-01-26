@@ -1,0 +1,42 @@
+; dbの作成、追加、選択、削除のテスト
+
+func main()
+	do dbg@print("\n### start ###\n")
+	
+	var s: sql@Sql :: sql@makeSql("test.db")
+	try
+		if(s.exec("create table test_tb (id int, name varchar(200))"))
+			do dbg@print("sql成功\n")
+		else
+			do dbg@print("sql失敗\n")
+			var msg: []char :: s.errMsg()
+			do dbg@print(msg)
+		end if
+		
+		var data: [][]char :: ["hogechan", "fugachan", "kuinachan"]
+		for i(0, 2)
+			do s.exec("insert into test_tb (id, name) values (\{i}, '\{data[i]}')")
+		end for
+		
+		do s.exec("select * from test_tb where name like '%chan'")
+		while fetchall(true)
+			var id: int :: s.getInt(0)
+			var name: []char :: s.getStr(1)
+			do dbg@print("\{id}, \{name}\n")
+			if(!s.next())
+				break fetchall
+			end if
+		end while
+		
+		do s.exec("delete from test_tb where id = 0")
+		do s.exec("select count(id) from test_tb")
+		var count: int :: s.getInt(0)
+		do dbg@print("count = \{count}\n")
+		
+		do s.exec("drop table test_tb")
+	finally
+		do s.fin()
+	end try
+	
+	do dbg@print("\n### end ###\n")
+end func
